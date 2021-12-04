@@ -8,6 +8,7 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
 - [ ] implement decklist importer
 - [ ] backup scryfall card data on our server
 - [ ] figure out keypress events (using keyboard buttons to interact with cards in addition to mouse)
+- [ ] add shit to context menu
 - [ ] figure out user accounts
 - [ ] figure out animations (drag and drop, tap, flip)
 - [ ] figure out how to do ads
@@ -28,16 +29,22 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
 - [ ] if we ever get big enough, migrate to AWS or something
 
 ### Tentative (Default) Keybinds
-| Action | Keybind(s) |
+| ####Action | ####Keybind(s) |
 | ---    | ---        |
-| stateless |
+| ####stateless |
 | zoom on card | alt |
 | zoom on card back face | shift+alt |
 | switch to board | w,a,s,d |
-| stateful |
+| ####stateful |
 | tap/untap | e,q,t |
 | flip | f |
 | flip to back face | shift+f |
 | copy | ctrl+c |
 | paste | ctrl+v |
 | delete | backspace |
+| ####a11y |
+| move highlighter | arrow keys |
+| switch highlighted card | arrow keys |
+| search card on battlefield | / |
+| next search result | n |
+| prev search result | shift+n |

@@ -30,4 +30,4 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
 ### Tentative (Default) Keybinds
 | Action | Keybind(s) |
 | ---    | ---        |
-| pog    | pog        |
+| pog | memes |

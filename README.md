@@ -23,6 +23,7 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
   - maybe mongoDB?
 
 ## Low Priority Features
+- [ ] grid snapping
 - [ ] sound assets for animations
 - [ ] responsiveness...?
 - [ ] let users upload custom images for card sleeves, card alts, and table background image

@@ -7,7 +7,7 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
 - [ ] implement data sync between clients on the same session (card state e.g. position, tapped/untapped)
 - [ ] implement decklist importer
 - [ ] backup scryfall card data on our server
-- [ ] figure out keypress events (using keyboard buttons to interact with cards in addition to mouse)
+- [ ] implement keypress events (using keyboard buttons to interact with cards in addition to mouse) including a11y
 - [ ] add shit to context menu
 - [ ] figure out user accounts
 - [ ] figure out animations (drag and drop, tap, flip)
@@ -23,28 +23,39 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
   - maybe mongoDB?
 
 ## Low Priority Features
+- [ ] sound assets for animations
+- [ ] responsiveness...?
 - [ ] let users upload custom images for card sleeves, card alts, and table background image
 - [ ] user keybind customization
 - [ ] built-in card search (literally just use scryfall)
 - [ ] if we ever get big enough, migrate to AWS or something
 
-### Tentative (Default) Keybinds
-| **Action** | **Keybind(s)** |
-| ---    | ---        |
+### Tentative (Default) Controls
+| **Action** | **Keybind(s)** | **Context Menu**
+| --- | --- | --- |
 | **stateless** |
-| zoom on card | alt |
-| zoom on card back face | shift+alt |
-| switch to board | w,a,s,d |
+| zoom on card | alt | no |
+| zoom on card back face | shift+alt | no |
+| switch to board | w,a,s,d | yes |
 | **stateful** |
-| tap/untap | e,q,t |
-| flip | f |
-| flip to back face | shift+f |
-| copy | ctrl+c |
-| paste | ctrl+v |
-| delete | backspace |
+| draw / move to hand | number keys | yes |
+| tap / untap | e,q,t | single |
+| flip | f | yes |
+| flip to back face | shift+f | single |
+| copy | ctrl+c | yes |
+| paste | ctrl+v | yes |
+| delete | backspace | yes |
+| shuffle | r | stack |
 | **a11y** |
-| move highlighter | arrow keys |
-| switch highlighted card | arrow keys |
-| search card on battlefield | / |
-| next search result | n |
-| prev search result | shift+n |
+| switch highlighted card | arrow keys | no |
+| search card on battlefield | / | no |
+| next search result | n | no |
+| prev search result | shift+n | no |
+| **extras** |
+| shuffle | | yes |
+| search | | yes |
+| reveal | | yes |
+| mill | | yes |
+| reveal until | | yes |
+| spawn tokens and emblems | | single |
+| toggle token status | | single |

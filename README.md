@@ -52,10 +52,10 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
 | next search result | n | no |
 | prev search result | shift+n | no |
 | **extras** |
-| shuffle | | yes |
-| search | | yes |
-| reveal | | yes |
-| mill | | yes |
-| reveal until | | yes |
+| shuffle | | stack |
+| search | | stack |
+| mill | | stack |
+| reveal | | stack |
+| reveal until | | stack |
 | spawn tokens and emblems | | single |
 | toggle token status | | single |

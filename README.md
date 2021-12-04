@@ -29,20 +29,20 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
 - [ ] if we ever get big enough, migrate to AWS or something
 
 ### Tentative (Default) Keybinds
-| ####Action | ####Keybind(s) |
+| **Action** | **Keybind(s)** |
 | ---    | ---        |
-| ####stateless |
+| **stateless** |
 | zoom on card | alt |
 | zoom on card back face | shift+alt |
 | switch to board | w,a,s,d |
-| ####stateful |
+| **stateful** |
 | tap/untap | e,q,t |
 | flip | f |
 | flip to back face | shift+f |
 | copy | ctrl+c |
 | paste | ctrl+v |
 | delete | backspace |
-| ####a11y |
+| **a11y** |
 | move highlighter | arrow keys |
 | switch highlighted card | arrow keys |
 | search card on battlefield | / |

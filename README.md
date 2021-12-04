@@ -23,7 +23,7 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
 
 ## Low Priority Features
 - [ ] let users upload custom images for card sleeves, card alts, and table background image
-- [ ] customize keybinds
+- [ ] user keybind customization
 - [ ] built-in card search (literally just use scryfall)
 - [ ] if we ever get big enough, migrate to AWS or something
 

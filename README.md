@@ -30,4 +30,14 @@ A free web app for in-browser simulated games of Magic: the Gathering (which is 
 ### Tentative (Default) Keybinds
 | Action | Keybind(s) |
 | ---    | ---        |
-| pog | memes |
+| stateless |
+| zoom-on-card | alt |
+| zoom-on-card-back-face | shift+alt |
+| switch-to-board | w,a,s,d |
+| stateful |
+| tap/untap | e,q,t |
+| flip | f |
+| flip-to-back-face | shift+f |
+| copy | ctrl+c |
+| paste | ctrl+v |
+| delete | backspace |

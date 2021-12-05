@@ -60,3 +60,4 @@ A free web app for simulating cards from trading card games in the browser
 | reveal until | | stack |
 | spawn tokens and emblems | | single |
 | toggle token status | | single |
+

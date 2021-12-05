@@ -1,5 +1,5 @@
-# untap-upkeep-draw
-A free web app for in-browser simulated games of Magic: the Gathering (which is a trading card game made and owned by Wizards of the Coast).
+# tcg-web-app
+A free web app for simulating cards from trading card games in the browser
 
 ## Roadmap
 - [ ] get a server set up and ready to go

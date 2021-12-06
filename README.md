@@ -5,7 +5,7 @@ A free web app for simulating cards from trading card games in the browser
 ## Roadmap
 
 - [ ] get a server set up and ready to go
-- [ ] figure out how anonymous sessions will work (look at https://github.com/jbowens/codenames for inspiration)
+- [ ] figure out how anonymous sessions will work (look at <https://github.com/jbowens/codenames> for inspiration)
 - [ ] implement data sync between clients on the same session (card state e.g. position, tapped/untapped)
 - [ ] implement decklist importer
 - [ ] backup scryfall card data on our server

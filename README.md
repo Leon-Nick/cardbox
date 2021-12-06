@@ -9,10 +9,10 @@ A free web app for simulating cards from trading card games in the browser
 - [ ] implement data sync between clients on the same session (card state e.g. position, tapped/untapped)
 - [ ] implement decklist importer
 - [ ] backup scryfall card data on our server
-- [ ] implement keypress events (using keyboard buttons to interact with cards in addition to mouse) including a11y
 - [ ] add shit to context menu
-- [ ] figure out user accounts
+- [ ] implement keypress events (using keyboard buttons to interact with cards in addition to mouse) including a11y
 - [ ] figure out animations (drag and drop, tap, flip)
+- [ ] figure out user accounts
 - [ ] figure out how to do ads
 
 ## Tech Stack

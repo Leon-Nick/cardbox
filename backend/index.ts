@@ -5,8 +5,8 @@ const server = express();
 
 const sessions: Record<string, Game> = {};
 
-server.get("/games/:id", (req, res) => {
-  const { id } = req.params;
+server.get("/session", (req, res) => {
+  const { id } = req.params as { id: string };
   if (!(id in sessions)) {
     sessions[id] = {
       meme: false,

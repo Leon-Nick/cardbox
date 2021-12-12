@@ -1,4 +1,4 @@
-package backend
+package backend_golang
 
 import (
 	"fmt"

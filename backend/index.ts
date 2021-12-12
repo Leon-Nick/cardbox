@@ -12,8 +12,7 @@ server.get("/games/:id", (req, res) => {
       meme: false,
     };
   }
-  const session = sessions[id];
-  res.send(`game with ID ${id} has meme set to ${session.meme}`);
+  res.send(sessions[id]);
 });
 
 server.listen(5000);

@@ -1,10 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
+import { Server } from "socket.io";
 import { Game } from "./models/game";
+import { createServer } from "http";
 
-const server = express();
+const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
-server.use(bodyParser.json());
+app.use(bodyParser.json());
 
 const sessions: Record<string, Game> = {};
 
@@ -13,7 +17,7 @@ type ReqBody = {
   meme: boolean;
 };
 
-server.get("/session", (req, res) => {
+app.get("/session", (req, res) => {
   const { id } = req.query as ReqQuery;
   if (!(id in sessions)) {
     sessions[id] = {
@@ -24,7 +28,7 @@ server.get("/session", (req, res) => {
   console.log(sessions);
 });
 
-server.post("/session", (req, res) => {
+app.post("/session", (req, res) => {
   const { id } = req.query as ReqQuery;
   const { meme } = req.body as ReqBody;
   if (id in sessions) {
@@ -36,4 +40,13 @@ server.post("/session", (req, res) => {
   console.log(sessions);
 });
 
-server.listen(5000);
+io.on("connection", (socket) => {
+  console.log("bepis");
+
+  socket.on("message", (event) => {
+    console.log(event);
+    io.emit("message", `user ${socket.id} ${event}`);
+  });
+});
+
+server.listen(8080);

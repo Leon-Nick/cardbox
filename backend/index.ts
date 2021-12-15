@@ -1,52 +1,63 @@
 import express from "express";
-import bodyParser from "body-parser";
+import { createServer } from "http";
 import { Server } from "socket.io";
 import { Game } from "./models/game";
-import { createServer } from "http";
+
+const rooms: Record<string, Game> = {};
+const players: Record<string, string> = {};
 
 const app = express();
-const server = createServer(app);
-const io = new Server(server);
-
-app.use(bodyParser.json());
-
-const sessions: Record<string, Game> = {};
-
-type ReqQuery = { id: string };
-type ReqBody = {
-  meme: boolean;
-};
-
-app.get("/session", (req, res) => {
-  const { id } = req.query as ReqQuery;
-  if (!(id in sessions)) {
-    sessions[id] = {
-      meme: false,
-    };
-  }
-  res.send(sessions[id]);
-  console.log(sessions);
-});
-
-app.post("/session", (req, res) => {
-  const { id } = req.query as ReqQuery;
-  const { meme } = req.body as ReqBody;
-  if (id in sessions) {
-    sessions[id].meme = meme;
-    res.send(true);
-  } else {
-    res.send(false);
-  }
-  console.log(sessions);
-});
+const httpServer = createServer(app);
+const io = new Server(httpServer);
 
 io.on("connection", (socket) => {
-  console.log("bepis");
+  const ipAddress = socket.handshake.address;
 
-  socket.on("message", (event) => {
-    console.log(event);
-    io.emit("message", `user ${socket.id} ${event}`);
+  socket.on("roomID", (roomID: string) => {
+    if (ipAddress in players && players[ipAddress] !== roomID) {
+      const oldRoomID = players[ipAddress];
+      const oldRoom = rooms[oldRoomID];
+      oldRoom.players.delete(ipAddress);
+    }
+
+    if (!(roomID in rooms)) {
+      rooms[roomID] = new Game(roomID, ipAddress);
+    }
+
+    const game = rooms[roomID];
+    socket.join(roomID);
+    game.players.add(ipAddress);
+    players[ipAddress] = roomID;
+
+    io.to(roomID).emit("gameState", game);
+  });
+
+  socket.on("gameState", (gameState) => {
+    const roomID = players[ipAddress];
+    rooms[roomID] = gameState;
+
+    io.to(roomID).emit("gameState", gameState);
+  });
+
+  socket.on("disconnecting", () => {
+    if (ipAddress in players) {
+      const roomID = players[ipAddress];
+      delete players[ipAddress];
+
+      if (roomID in rooms) {
+        const game = rooms[roomID];
+        game.players.delete(ipAddress);
+
+        if (game.players.size === 0) {
+          delete rooms[roomID];
+        } else if (game.hostID === ipAddress) {
+          game.hostID = Array.from(game.players)[0];
+
+          io.to(roomID).emit("gameState", game);
+        }
+      }
+    }
   });
 });
 
-server.listen(8080);
+httpServer.listen(8080);

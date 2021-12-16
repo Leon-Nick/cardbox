@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import styles from "../styles/Home.module.scss";
-import { randomRoomID } from "../utils/random";
+import { randomRoomID } from "../common/utils/random";
 
 const Home: NextPage = () => {
   const router = useRouter();

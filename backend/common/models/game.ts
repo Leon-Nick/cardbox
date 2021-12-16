@@ -6,8 +6,18 @@ export class Game {
 
   constructor(roomID: string, hostID: string) {
     this.ID = roomID;
+    this.players = new Set();
     this.hostID = hostID;
-    this.players = new Set(hostID);
     this.meme = false;
+  }
+
+  toString() {
+    return (
+      "{\n\t" +
+      Object.entries(this)
+        .map(([key, val]) => `${key}: ${JSON.stringify(val)}`)
+        .join("\n\t") +
+      "\n}"
+    );
   }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Game } from "../../models/game";
+import { Game } from "../../common/models/game";
 import io from "socket.io-client";
 import { useRouter } from "next/router";
 

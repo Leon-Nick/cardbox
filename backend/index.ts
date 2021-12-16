@@ -1,7 +1,7 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { Game } from "./models/game";
+import { Game } from "./common/models/game";
 
 const rooms: Record<string, Game> = {};
 const players: Record<string, string> = {};

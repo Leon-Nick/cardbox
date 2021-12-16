@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 const Room: React.FC = () => {
   const router = useRouter();
   const roomID = router.query.id as string;
+  console.log(`room ID: ${roomID}`);
 
   const socketRef = useRef(io("http://localhost:8080"));
   const socket = socketRef.current;
@@ -14,15 +15,19 @@ const Room: React.FC = () => {
 
   useEffect(() => {
     socket.on("connect", () => {
+      console.log("socket connected");
       socket.emit("roomID", roomID);
+      console.log(`sent room ID ${roomID} to server`);
     });
 
     socket.on("gameState", (newGameState: Game) => {
       setGameState(newGameState);
+      console.log(`received game state update: ${newGameState}`);
     });
 
     return () => {
       socket.disconnect();
+      console.log(`disconnected`);
     };
   }, [roomID, socket]);
 
@@ -37,18 +42,13 @@ const Room: React.FC = () => {
               setGameState(temp);
 
               socket.emit("gameState", gameState);
+              console.log(`sent updated game state: ${gameState}`);
             }}
           >
             meme
           </button>
           <h1>Game State</h1>
-          <ul>
-            {Object.entries(gameState).map(([key, val]) => (
-              <li key={key}>
-                {key}: {JSON.stringify(val)}
-              </li>
-            ))}
-          </ul>
+          <code>{gameState}</code>
         </>
       )}
     </div>

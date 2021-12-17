@@ -12,36 +12,41 @@ export interface ScryfallData {
 
   // Gameplay Fields
 
-  // oversized: boolean;
-  // reserved: boolean;
-
   cmc: number;
-  // edhrec_rank: number;
-
   loyalty?: number;
   power?: number;
   toughness?: number;
 
-  // color_identity: Color[];
-  // color_indicator: Color[];
   colors: Color[];
   layout: Layout;
-  // legalities: Record<Format, Legality>;
-
-  // all_parts?: RelatedCard[];
   card_faces?: CardFace[];
   produced_mana?: Color[];
 
   keywords: string[];
   name: string;
   type_line: string;
-
-  // hand_modifier?: string;
-  // life_modifier?: string;
   mana_cost?: string;
   oracle_text?: string;
 
+  // oversized: boolean;
+  // reserved: boolean;
+  // edhrec_rank: number;
+  // color_identity: Color[];
+  // color_indicator: Color[];
+  // legalities: Record<Format, Legality>;
+  // all_parts?: RelatedCard[];
+  // hand_modifier?: string;
+  // life_modifier?: string;
+
   // Print Fields
+
+  flavor_name?: string;
+  flavor_text?: string;
+  printed_name?: string;
+  printed_text?: string;
+  printed_type_line?: string;
+  related_uris: Record<string, URL>;
+  image_uris?: Record<ImageType, URI>;
 
   // booster: boolean;
   // digital: boolean;
@@ -65,12 +70,7 @@ export interface ScryfallData {
   // set_id: string;
 
   // artist?: string;
-  flavor_name?: string;
-  flavor_text?: string;
   // illustration_id?: string;
-  printed_name?: string;
-  printed_text?: string;
-  printed_type_line?: string;
   // variation_of?: string;
   // watermark?: string;
 
@@ -84,9 +84,7 @@ export interface ScryfallData {
   // security_stamp?: "oval" | "triangle" | "acorn" | "arena";
 
   // releasted_at: Date;
-  related_uris: Record<string, URL>;
 
-  image_uris?: Record<ImageType, URI>;
   // frame_effects?: FrameEffect[];
   // preview?: {
   //   previewed_at: Date;

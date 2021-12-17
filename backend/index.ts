@@ -3,7 +3,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 // common
 import { Events } from "./common/events";
-import { Game, gameStr } from "./common/models/game";
+import { Game, gameStr } from "./common/models/Game";
 
 // map of each room ID to its respective game session
 const rooms: Record<string, Game> = {};

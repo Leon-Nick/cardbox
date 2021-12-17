@@ -2,6 +2,11 @@ import { Card } from "./Card";
 import { Counter } from "./Counter";
 import { CardStack } from "./CardStack";
 
+export interface GameInitArgs {
+  roomID: string;
+  hostID: string;
+}
+
 export class Game {
   public ID: string;
   public players: Set<string>;
@@ -12,9 +17,11 @@ export class Game {
   public cardStacks: Record<string, CardStack>;
   public counters: Record<string, Counter>;
 
-  constructor(roomID: string, hostID: string) {
+  constructor(args: GameInitArgs) {
+    const { roomID, hostID } = args;
     this.ID = roomID;
     this.players = new Set();
+    this.players.add(hostID);
     this.hostID = hostID;
     this.locked = false;
 

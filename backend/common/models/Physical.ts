@@ -3,5 +3,5 @@ export interface Physical {
   width: string;
   x: number | null;
   y: number | null;
-  rotated: boolean | null;
+  rotation: number | null;
 }

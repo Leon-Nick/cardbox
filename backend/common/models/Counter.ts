@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { Physical } from "../Physical";
+import { Physical } from "./Physical";
 
 export class Counter implements Physical {
   public ID: string;
@@ -9,7 +9,7 @@ export class Counter implements Physical {
   public width: string;
   public x: number | null;
   public y: number | null;
-  public rotated: boolean | null;
+  public rotation: number | null;
 
   constructor(
     vals: number[] = [0],
@@ -25,6 +25,6 @@ export class Counter implements Physical {
     this.width = width;
     this.x = x;
     this.y = y;
-    this.rotated = false;
+    this.rotation = 0;
   }
 }

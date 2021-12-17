@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { Physical } from "../Physical";
+import { Physical } from "./Physical";
 import { Card } from "./Card";
 
 export class Stack implements Physical {
@@ -10,7 +10,7 @@ export class Stack implements Physical {
   public width: string;
   public x: number | null;
   public y: number | null;
-  public rotated: boolean | null;
+  public rotation: number | null;
 
   constructor(
     cards: Record<string, Card>,
@@ -26,6 +26,6 @@ export class Stack implements Physical {
     this.width = width;
     this.x = x;
     this.y = y;
-    this.rotated = false;
+    this.rotation = 0;
   }
 }

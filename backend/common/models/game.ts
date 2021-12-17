@@ -11,13 +11,16 @@ export class Game {
     this.meme = false;
   }
 
-  toString() {
-    return (
-      "{\n\t" +
-      Object.entries(this)
-        .map(([key, val]) => `${key}: ${JSON.stringify(val)}`)
-        .join("\n\t") +
-      "\n}"
-    );
-  }
+}
+
+export function gameStr(game: Game): string {
+  return (
+    "{\n\t" +
+    Object.entries(game)
+      .map(
+        ([key, val]) => `${key}: ${key === "players" ? Array.from(val) : val}`
+      )
+      .join("\n\t") +
+    "\n}"
+  );
 }

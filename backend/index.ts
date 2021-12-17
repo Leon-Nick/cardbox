@@ -1,9 +1,20 @@
 import express from "express";
 import { createServer } from "http";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 // common
 import { Event } from "./common/events";
-import { Game, gameStr } from "./common/models/Game";
+import {
+  Card,
+  CardInitArgs,
+  CardStack,
+  CardStackInitArgs,
+  Counter,
+  CounterInitArgs,
+  Game,
+  GameInitArgs,
+  gameStr,
+  ScryfallData,
+} from "./common/models";
 
 // map of each room ID to its respective game session
 const rooms: Record<string, Game> = {};
@@ -16,57 +27,24 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 httpServer.listen(8080);
 
-io.on(Event.Connection, (socket) => {
+io.on(Event.Connection, (socket: Socket) => {
+  // use this client's IP address as their identifier
   const ipAddress = socket.handshake.address;
-  console.log(`${ipAddress} connected`);
+  console.log(`player ${ipAddress} connected`);
 
-  socket.on(Event.JoinedRoom, (roomID: string) => {
-    console.log(`${ipAddress} tried to join room ${roomID}`);
-    if (ipAddress in players && players[ipAddress] !== roomID) {
-      const oldRoomID = players[ipAddress];
-      const oldRoom = rooms[oldRoomID];
-      oldRoom.players.delete(ipAddress);
-      console.log(`${ipAddress} removed from room ${oldRoomID}`);
-    }
-
-    if (!(roomID in rooms)) {
-      rooms[roomID] = new Game(roomID, ipAddress);
-      console.log(`room ${roomID} did not exist; created new room.`);
-      console.log(`${ipAddress} set as 'host' of room ${roomID}`);
-    }
-
-    players[ipAddress] = roomID;
-    const gameState = rooms[roomID];
-    gameState.players.add(ipAddress);
-    socket.join(roomID);
-    console.log(`${ipAddress} added to room ${roomID}`);
-
-    io.to(roomID).emit(Event.UpdatedGameState, gameState);
-    console.log(`sent game state update to room ${roomID}`);
-    console.log(`updated game state: `, gameStr(gameState));
-  });
-
-  socket.on(Event.UpdatedGameState, (gameState: Game) => {
-    const roomID = players[ipAddress];
-    rooms[roomID] = gameState;
-    console.log(`received game state update from ${ipAddress}`);
-
-    io.to(roomID).emit("updatedGameState", gameState);
-    console.log(`sent game state update to room ${roomID}`);
-    console.log(`updated game state: `, gameStr(gameState));
-  });
+  // Out-Of-Game and Socket.io Events
 
   socket.on(Event.Disconnecting, () => {
     console.log(`${ipAddress} disconnected`);
     if (ipAddress in players) {
       const roomID = players[ipAddress];
       delete players[ipAddress];
-      console.log(`${ipAddress} removed from global player list`);
+      console.log(`player ${ipAddress} removed from global player list`);
 
       if (roomID in rooms) {
         const gameState = rooms[roomID];
         gameState.players.delete(ipAddress);
-        console.log(`${ipAddress} removed from room ${roomID}`);
+        console.log(`player ${ipAddress} removed from room ${roomID}`);
 
         if (gameState.players.size === 0) {
           delete rooms[roomID];
@@ -74,13 +52,316 @@ io.on(Event.Connection, (socket) => {
           console.log(`closed empty room ${roomID}`);
         } else if (gameState.hostID === ipAddress) {
           gameState.hostID = Array.from(gameState.players)[0];
-          console.log(`${ipAddress} was host; new host is ${gameState.hostID}`);
+          console.log(
+            ` player ${ipAddress} was host; new host is ${gameState.hostID}`
+          );
 
-          io.to(roomID).emit(Event.UpdatedGameState, gameState);
-          console.log(`sent game state update to room ${roomID}`);
-          console.log(`updated game state: `, gameStr(gameState));
+          io.to(roomID).emit(Event.PlayerLeft, ipAddress);
+          console.log(`told room ${roomID} that player ${ipAddress} left`);
+          console.log(`current game state: `, gameStr(gameState));
         }
       }
+    }
+  });
+
+  socket.on(Event.PlayerJoined, (roomID: string) => {
+    console.log(`player ${ipAddress} tried to join room ${roomID}`);
+
+    if (ipAddress in players && players[ipAddress] !== roomID) {
+      const oldRoomID = players[ipAddress];
+      const oldRoom = rooms[oldRoomID];
+      oldRoom.players.delete(ipAddress);
+      socket.leave(oldRoomID);
+      console.log(`player ${ipAddress} removed from room ${oldRoomID}`);
+    }
+
+    players[ipAddress] = roomID;
+    socket.join(roomID);
+
+    if (roomID in rooms) {
+      rooms[roomID].players.add(ipAddress);
+      io.to(roomID).emit(Event.PlayerJoined, ipAddress);
+
+      console.log(`player ${ipAddress} joined room ${roomID}`);
+    } else {
+      const args: GameInitArgs = { roomID, hostID: ipAddress };
+      rooms[roomID] = new Game(args);
+      io.to(roomID).emit(Event.RoomCreated, args);
+
+      console.log(
+        `created new room ${roomID} with player ${ipAddress} as host`
+      );
+    }
+    console.log(`current game state: `, gameStr(rooms[roomID]));
+  });
+
+  // In-Game Events: Card
+
+  socket.on(Event.CardCreated, (args: CardInitArgs) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (args.ID in room.cards) {
+      const card = room.cards[args.ID];
+      console.log(`card with ID ${card.ID} already exists: ${card.data.name}`);
+    } else {
+      const card = new Card(args);
+      room.cards[card.ID] = card;
+      io.to(roomID).emit(Event.CardCreated, args);
+      console.log(`created card ${card.data.name} with ID ${card.ID}`);
+    }
+  });
+
+  socket.on(Event.CardDeleted, (cardID: string) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (cardID in room.cards) {
+      const cardName = room.cards[cardID].data.name;
+      delete room.cards[cardID];
+      io.to(roomID).emit(Event.CardDeleted, cardID);
+      console.log(`deleted card ${cardName} with ID ${cardID}`);
+    } else {
+      console.log(`cannot delete card with ID ${cardID}; does not exist`);
+    }
+  });
+
+  socket.on(Event.CardMoved, (cardID: string, x: number, y: number) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (cardID in room.cards) {
+      const card = room.cards[cardID];
+      const oldX = card.x;
+      const oldY = card.y;
+      card.x = x;
+      card.y = y;
+      io.to(roomID).emit(Event.CardMoved, cardID, x, y);
+      console.log(
+        `card ${card.data.name} moved from [${oldX},${oldY}] to [${x}, ${y}]`
+      );
+    } else {
+      console.log(`cannot move card with ID ${cardID}; does not exist`);
+    }
+  });
+
+  socket.on(Event.CardRotated, (cardID: string, rotation: number) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (cardID in room.cards) {
+      const card = room.cards[cardID];
+      const oldRotation = card.rotation;
+      card.rotation = rotation;
+      io.to(roomID).emit(Event.CardRotated, cardID, rotation);
+      console.log(
+        `changed rotation of card ${card.data.name} from ${oldRotation} to ${rotation}`
+      );
+    } else {
+      console.log(`cannot rotate card with ID ${cardID}; does not exist`);
+    }
+  });
+
+  // In-Game Events: Counter
+
+  socket.on(Event.CounterCreated, (args: CounterInitArgs) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (args.ID in room.counters) {
+      const counter = room.counters[args.ID];
+      console.log(`counter with ID ${counter.ID} already exists`);
+    } else {
+      const counter = new Counter(args);
+      room.counters[counter.ID] = counter;
+      io.to(roomID).emit(Event.CounterCreated, args);
+      console.log(`created counter with ID ${counter.ID}`);
+    }
+  });
+
+  socket.on(Event.CounterDeleted, (counterID: string) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (counterID in room.counters) {
+      delete room.counters[counterID];
+      io.to(roomID).emit(Event.CounterDeleted, counterID);
+      console.log(`deleted counter ${counterID}`);
+    } else {
+      console.log(`cannot delete counter ${counterID}; does not exist`);
+    }
+  });
+
+  socket.on(Event.CounterValsChanged, (counterID: string, vals: number[]) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (counterID in room.counters) {
+      const counter = room.counters[counterID];
+      const oldVals = counter.vals;
+      counter.vals = vals;
+      io.to(roomID).emit(Event.CounterValsChanged, counterID, vals);
+      console.log(
+        `changed vals of counter ${counterID} from [${oldVals}] to [${vals}]`
+      );
+    } else {
+      console.log(`cannot change vals of counter ${counterID}; does not exist`);
+    }
+  });
+
+  socket.on(Event.CounterMoved, (counterID: string, x: number, y: number) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (counterID in room.counters) {
+      const counter = room.counters[counterID];
+      const oldX = counter.x;
+      const oldY = counter.y;
+      counter.x = x;
+      counter.y = y;
+      io.to(roomID).emit(Event.CounterMoved, counterID, x, y);
+      console.log(
+        `counter ${counterID} moved from [${oldX}, ${oldY}] to [${x}, ${y}]`
+      );
+    } else {
+      console.log(`cannot move counter ${counterID}; does not exist`);
+    }
+  });
+
+  socket.on(Event.CounterRotated, (counterID: string, rotation: number) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (counterID in room.counters) {
+      const counter = room.counters[counterID];
+      const oldRotation = counter.rotation;
+      counter.rotation = rotation;
+      io.to(roomID).emit(Event.CounterRotated, counterID, rotation);
+      console.log(
+        `changed rotation of counter ${counterID} from ${oldRotation} to ${rotation}`
+      );
+    } else {
+      console.log(`cannot rotate counter with ID ${counterID}; does not exist`);
+    }
+  });
+
+  // In-Game Events: CardStack
+
+  socket.on(Event.CardStackCreated, (args: CardStackInitArgs) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (args.ID in room.cardStacks) {
+      const cardStack = room.cardStacks[args.ID];
+      console.log(`cardStack with ID ${cardStack.ID} already exists`);
+    } else {
+      const cardStack = new CardStack(args);
+      room.cardStacks[cardStack.ID] = cardStack;
+      io.to(roomID).emit(Event.CardStackCreated, args);
+      console.log(`created cardStack with ID ${cardStack.ID}`);
+    }
+  });
+
+  socket.on(Event.CardStackDeleted, (cardStackID: string) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (cardStackID in room.cardStacks) {
+      delete room.cardStacks[cardStackID];
+      io.to(roomID).emit(Event.CardStackDeleted, cardStackID);
+      console.log(`deleted cardStack ${cardStackID}`);
+    } else {
+      console.log(`cannot delete cardStack ${cardStackID}; does not exist`);
+    }
+  });
+
+  socket.on(
+    Event.CardStackShuffled,
+    (cardStackID: string, cards: ScryfallData[]) => {
+      const roomID = players[ipAddress];
+      const room = rooms[roomID];
+
+      console.log(`in room ${roomID}:`);
+      if (cardStackID in room.cardStacks) {
+        const cardStack = room.cardStacks[cardStackID];
+        cardStack.cards = cards;
+        io.to(roomID).emit(Event.CardStackShuffled);
+        console.log(`shuffled cardStack ${cardStackID}`);
+      } else {
+        console.log(`cannot shuffle cardStack ${cardStackID}; does not exist`);
+      }
+    }
+  );
+
+  socket.on(
+    Event.CardStackModified,
+    (cardStackID: string, cards: ScryfallData[]) => {
+      const roomID = players[ipAddress];
+      const room = rooms[roomID];
+
+      console.log(`in room ${roomID}:`);
+      if (cardStackID in room.cardStacks) {
+        const cardStack = room.cardStacks[cardStackID];
+        cardStack.cards = cards;
+        io.to(roomID).emit(Event.CardStackModified);
+        console.log(`modified cardStack ${cardStackID}`);
+      } else {
+        console.log(`cannot modify cardStack ${cardStackID}; does not exist`);
+      }
+    }
+  );
+
+  socket.on(
+    Event.CardStackMoved,
+    (cardStackID: string, x: number, y: number) => {
+      const roomID = players[ipAddress];
+      const room = rooms[roomID];
+
+      console.log(`in room ${roomID}:`);
+      if (cardStackID in room.cardStacks) {
+        const cardStack = room.cardStacks[cardStackID];
+        const oldX = cardStack.x;
+        const oldY = cardStack.y;
+        cardStack.x = x;
+        cardStack.y = y;
+        io.to(roomID).emit(Event.CardStackMoved, cardStackID, x, y);
+        console.log(
+          `cardStack ${cardStackID} moved from [${oldX}, ${oldY}] to [${x}, ${y}]`
+        );
+      } else {
+        console.log(`cannot move cardStack ${cardStackID}; does not exist`);
+      }
+    }
+  );
+
+  socket.on(Event.CardStackRotated, (cardStackID: string, rotation: number) => {
+    const roomID = players[ipAddress];
+    const room = rooms[roomID];
+
+    console.log(`in room ${roomID}:`);
+    if (cardStackID in room.cardStacks) {
+      const cardStack = room.cardStacks[cardStackID];
+      const oldRotation = cardStack.rotation;
+      cardStack.rotation = rotation;
+      io.to(roomID).emit(Event.CardStackRotated, cardStackID, rotation);
+      console.log(
+        `changed rotation of cardStack ${cardStackID} from ${oldRotation} to ${rotation}`
+      );
+    } else {
+      console.log(
+        `cannot rotate cardStack with ID ${cardStackID}; does not exist`
+      );
     }
   });
 });

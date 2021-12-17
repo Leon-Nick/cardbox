@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { Physical } from "./Physical";
-import { ScryfallData } from "./Scryfall";
+import { ScryfallData } from "./ScryfallData";
 
 export class Card implements Physical {
   public ID: string;

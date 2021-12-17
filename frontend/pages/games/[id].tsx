@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Game } from "../../common/models/game";
+import { useEffect, useMemo, useState } from "react";
+import { Game, gameStr } from "../../common/models/game";
 import io from "socket.io-client";
 import { useRouter } from "next/router";
 
@@ -14,11 +14,11 @@ const Room: React.FC = () => {
   useEffect(() => {
     socket.on("connect", () => {
       console.log("socket connected");
-      socket.emit("roomID", roomID);
+      socket.emit("joinedRoom", roomID);
       console.log(`sent room ID ${roomID} to server`);
     });
 
-    socket.on("gameState", (newGameState: Game) => {
+    socket.on("updatedGameState", (newGameState: Game) => {
       setGameState(newGameState);
       console.log(`received game state update: ${newGameState}`);
     });
@@ -38,15 +38,16 @@ const Room: React.FC = () => {
               const temp = gameState;
               temp.meme = !temp.meme;
               setGameState(temp);
-
-              socket.emit("gameState", gameState);
-              console.log(`sent updated game state: ${gameState}`);
+              if (socket) {
+                socket.emit("updatedGameState", gameState);
+                console.log(`sent updated game state: `, gameState);
+              }
             }}
           >
             meme
           </button>
           <h1>Game State</h1>
-          <code>{gameState}</code>
+          <code>{gameStr(gameState)}</code>
         </>
       )}
     </div>

@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { Physical } from "./Physical";
-import { ScryfallData } from "./Scryfall";
+import { ScryfallData } from "./ScryfallData";
 
 export class Card implements Physical {
   public ID: string;
@@ -8,9 +8,9 @@ export class Card implements Physical {
 
   public height: string;
   public width: string;
-  public x: number | null;
-  public y: number | null;
-  public rotation: number | null;
+  public x: number;
+  public y: number;
+  public rotation: number;
 
   constructor(
     data: ScryfallData,

@@ -1,19 +1,20 @@
 import { randomUUID } from "crypto";
 import { Physical } from "./Physical";
 import { Card } from "./Card";
+import { ScryfallData } from "./ScryfallData";
 
 export class CardStack implements Physical {
   public ID: string;
-  public cards: Record<string, Card>;
+  public cards: ScryfallData[];
 
   public height: string;
   public width: string;
-  public x: number | null;
-  public y: number | null;
-  public rotation: number | null;
+  public x: number;
+  public y: number;
+  public rotation: number;
 
   constructor(
-    cards: Record<string, Card>,
+    cards: ScryfallData[],
     height: string,
     width: string,
     x: number,

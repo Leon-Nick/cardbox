@@ -6,15 +6,18 @@ export class Game {
   public ID: string;
   public players: Set<string>;
   public hostID: string;
+  public locked: boolean;
 
   public cards: Record<string, Card>;
-  public counters: Record<string, Counter>;
   public cardStacks: Record<string, CardStack>;
+  public counters: Record<string, Counter>;
 
   constructor(roomID: string, hostID: string) {
     this.ID = roomID;
     this.players = new Set();
     this.hostID = hostID;
+    this.locked = false;
+
     this.cards = {};
     this.counters = {};
     this.cardStacks = {};

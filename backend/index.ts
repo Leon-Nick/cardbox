@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 // common
-import { Events } from "./common/events";
+import { Event } from "./common/events";
 import { Game, gameStr } from "./common/models/Game";
 
 // map of each room ID to its respective game session
@@ -16,11 +16,11 @@ const httpServer = createServer(app);
 const io = new Server(httpServer);
 httpServer.listen(8080);
 
-io.on(Events.Connection, (socket) => {
+io.on(Event.Connection, (socket) => {
   const ipAddress = socket.handshake.address;
   console.log(`${ipAddress} connected`);
 
-  socket.on(Events.JoinedRoom, (roomID: string) => {
+  socket.on(Event.JoinedRoom, (roomID: string) => {
     console.log(`${ipAddress} tried to join room ${roomID}`);
     if (ipAddress in players && players[ipAddress] !== roomID) {
       const oldRoomID = players[ipAddress];
@@ -41,12 +41,12 @@ io.on(Events.Connection, (socket) => {
     socket.join(roomID);
     console.log(`${ipAddress} added to room ${roomID}`);
 
-    io.to(roomID).emit(Events.UpdatedGameState, gameState);
+    io.to(roomID).emit(Event.UpdatedGameState, gameState);
     console.log(`sent game state update to room ${roomID}`);
     console.log(`updated game state: `, gameStr(gameState));
   });
 
-  socket.on(Events.UpdatedGameState, (gameState: Game) => {
+  socket.on(Event.UpdatedGameState, (gameState: Game) => {
     const roomID = players[ipAddress];
     rooms[roomID] = gameState;
     console.log(`received game state update from ${ipAddress}`);
@@ -56,7 +56,7 @@ io.on(Events.Connection, (socket) => {
     console.log(`updated game state: `, gameStr(gameState));
   });
 
-  socket.on(Events.Disconnecting, () => {
+  socket.on(Event.Disconnecting, () => {
     console.log(`${ipAddress} disconnected`);
     if (ipAddress in players) {
       const roomID = players[ipAddress];
@@ -76,7 +76,7 @@ io.on(Events.Connection, (socket) => {
           gameState.hostID = Array.from(gameState.players)[0];
           console.log(`${ipAddress} was host; new host is ${gameState.hostID}`);
 
-          io.to(roomID).emit(Events.UpdatedGameState, gameState);
+          io.to(roomID).emit(Event.UpdatedGameState, gameState);
           console.log(`sent game state update to room ${roomID}`);
           console.log(`updated game state: `, gameStr(gameState));
         }

@@ -7,9 +7,7 @@ const Room: React.FC = () => {
   const router = useRouter();
   const roomID = router.query.id as string;
   console.log(`room ID: ${roomID}`);
-
-  const socketRef = useRef(io("http://localhost:8080"));
-  const socket = socketRef.current;
+  const socket = useMemo(() => io("http://localhost:8080"), []);
 
   const [gameState, setGameState] = useState<Game>();
 

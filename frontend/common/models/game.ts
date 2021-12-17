@@ -9,9 +9,8 @@ export class Game {
     this.players = new Set();
     this.hostID = hostID;
     this.meme = false;
-
-    this.players.toString = () => Array.from(this.players).toString();
   }
+
 }
 
 export function gameStr(game: Game): string {

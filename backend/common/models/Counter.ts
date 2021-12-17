@@ -7,9 +7,9 @@ export class Counter implements Physical {
 
   public height: string;
   public width: string;
-  public x: number | null;
-  public y: number | null;
-  public rotation: number | null;
+  public x: number;
+  public y: number;
+  public rotation: number;
 
   constructor(
     vals: number[] = [0],

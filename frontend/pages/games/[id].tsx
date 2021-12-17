@@ -37,13 +37,13 @@ const Room: React.FC = () => {
         <>
           <button
             onClick={() => {
-              const temp = gameState;
-              temp.meme = !temp.meme;
-              setGameState(temp);
-              if (socket) {
-                socket.emit(Event.UpdatedGameState, gameState);
-                console.log(`sent updated game state: `, gameState);
-              }
+              // const temp = gameState;
+              // temp.meme = !temp.meme;
+              // setGameState(temp);
+              // if (socket) {
+              //   socket.emit(Event.UpdatedGameState, gameState);
+              //   console.log(`sent updated game state: `, gameState);
+              // }
             }}
           >
             meme

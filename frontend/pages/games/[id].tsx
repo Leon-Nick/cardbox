@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import io from "socket.io-client";
 // common
-import { Game, gameStr } from "../../common/models/game";
-import { Events } from "../../common/events";
+import { Game, gameStr } from "../../common/models/Game";
+import { Event } from "../../common/events";
 
 const Room: React.FC = () => {
   const router = useRouter();
@@ -14,13 +14,13 @@ const Room: React.FC = () => {
   const [gameState, setGameState] = useState<Game>();
 
   useEffect(() => {
-    socket.on(Events.Connection, () => {
+    socket.on(Event.Connection, () => {
       console.log("socket connected");
-      socket.emit(Events.JoinedRoom, roomID);
+      socket.emit(Event.JoinedRoom, roomID);
       console.log(`sent room ID ${roomID} to server`);
     });
 
-    socket.on(Events.UpdatedGameState, (newGameState: Game) => {
+    socket.on(Event.UpdatedGameState, (newGameState: Game) => {
       setGameState(newGameState);
       console.log(`received game state update: ${newGameState}`);
     });
@@ -41,7 +41,7 @@ const Room: React.FC = () => {
               temp.meme = !temp.meme;
               setGameState(temp);
               if (socket) {
-                socket.emit(Events.UpdatedGameState, gameState);
+                socket.emit(Event.UpdatedGameState, gameState);
                 console.log(`sent updated game state: `, gameState);
               }
             }}

@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { Physical } from "./Physical";
 import { Card } from "./Card";
 
-export class Stack implements Physical {
+export class CardStack implements Physical {
   public ID: string;
   public cards: Record<string, Card>;
 

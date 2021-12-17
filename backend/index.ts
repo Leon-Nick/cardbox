@@ -1,8 +1,9 @@
 import express from "express";
 import { createServer } from "http";
-import { Server, Socket } from "socket.io";
-import { Game } from "./common/models/game";
-import { gameStr } from "./common/models/game";
+import { Server } from "socket.io";
+// common
+import { Events } from "./common/events";
+import { Game, gameStr } from "./common/models/game";
 
 // map of each room ID to its respective game session
 const rooms: Record<string, Game> = {};
@@ -13,14 +14,13 @@ const players: Record<string, string> = {};
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
-io.on("connection", handleConnect);
 httpServer.listen(8080);
 
-function handleConnect(socket: Socket) {
+io.on(Events.Connection, (socket) => {
   const ipAddress = socket.handshake.address;
   console.log(`${ipAddress} connected`);
 
-  socket.on("joinedRoom", (roomID: string) => {
+  socket.on(Events.JoinedRoom, (roomID: string) => {
     console.log(`${ipAddress} tried to join room ${roomID}`);
     if (ipAddress in players && players[ipAddress] !== roomID) {
       const oldRoomID = players[ipAddress];
@@ -41,12 +41,12 @@ function handleConnect(socket: Socket) {
     socket.join(roomID);
     console.log(`${ipAddress} added to room ${roomID}`);
 
-    io.to(roomID).emit("updatedGameState", gameState);
+    io.to(roomID).emit(Events.UpdatedGameState, gameState);
     console.log(`sent game state update to room ${roomID}`);
     console.log(`updated game state: `, gameStr(gameState));
   });
 
-  socket.on("updatedGameState", (gameState: Game) => {
+  socket.on(Events.UpdatedGameState, (gameState: Game) => {
     const roomID = players[ipAddress];
     rooms[roomID] = gameState;
     console.log(`received game state update from ${ipAddress}`);
@@ -56,7 +56,7 @@ function handleConnect(socket: Socket) {
     console.log(`updated game state: `, gameStr(gameState));
   });
 
-  socket.on("disconnecting", () => {
+  socket.on(Events.Disconnecting, () => {
     console.log(`${ipAddress} disconnected`);
     if (ipAddress in players) {
       const roomID = players[ipAddress];
@@ -76,11 +76,11 @@ function handleConnect(socket: Socket) {
           gameState.hostID = Array.from(gameState.players)[0];
           console.log(`${ipAddress} was host; new host is ${gameState.hostID}`);
 
-          io.to(roomID).emit("updatedGameState", gameState);
+          io.to(roomID).emit(Events.UpdatedGameState, gameState);
           console.log(`sent game state update to room ${roomID}`);
           console.log(`updated game state: `, gameStr(gameState));
         }
       }
     }
   });
-}
+});

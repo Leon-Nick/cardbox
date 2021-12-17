@@ -1,57 +1,57 @@
+import { useEffect, useMemo, useState } from "react";
+import { Game, gameStr } from "../../common/models/game";
+import io from "socket.io-client";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { Game } from "../../models/game";
 
-type Update = {
-  meme: boolean;
-};
-
-async function fetchGameState(id: string): Promise<Game> {
-  const res = await fetch(`http://localhost:5000/session?id=${id}`);
-  const data: Game = await res.json();
-  return data;
-}
-
-async function updateGameState(id: string, update: Update): Promise<boolean> {
-  const res = await fetch(`http://localhost:5000/session?id=${id}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(update),
-  });
-
-  const success: boolean = await res.json();
-  return success;
-}
-
-const GamePage: React.FC = () => {
+const Room: React.FC = () => {
   const router = useRouter();
-  const id = router.query.id as string;
+  const roomID = router.query.id as string;
+  console.log(`room ID: ${roomID}`);
+  const socket = useMemo(() => io("http://localhost:8080"), []);
+
   const [gameState, setGameState] = useState<Game>();
 
   useEffect(() => {
-    fetchGameState(id).then(setGameState);
-  }, [id]);
+    socket.on("connect", () => {
+      console.log("socket connected");
+      socket.emit("joinedRoom", roomID);
+      console.log(`sent room ID ${roomID} to server`);
+    });
 
-  console.log(gameState);
+    socket.on("updatedGameState", (newGameState: Game) => {
+      setGameState(newGameState);
+      console.log(`received game state update: ${newGameState}`);
+    });
+
+    return () => {
+      socket.disconnect();
+      console.log(`disconnected`);
+    };
+  }, [roomID, socket]);
+
   return (
     <div>
       {gameState && (
-        <button
-          onClick={() =>
-            console.log(
-              updateGameState(id, {
-                meme: !gameState.meme,
-              })
-            )
-          }
-        >
-          <h1>{gameState.meme ? "a" : "b"}</h1>
-        </button>
+        <>
+          <button
+            onClick={() => {
+              const temp = gameState;
+              temp.meme = !temp.meme;
+              setGameState(temp);
+              if (socket) {
+                socket.emit("updatedGameState", gameState);
+                console.log(`sent updated game state: `, gameState);
+              }
+            }}
+          >
+            meme
+          </button>
+          <h1>Game State</h1>
+          <code>{gameStr(gameState)}</code>
+        </>
       )}
     </div>
   );
 };
 
-export default GamePage;
+export default Room;

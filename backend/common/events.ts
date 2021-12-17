@@ -21,9 +21,7 @@ export enum Event {
   // In-Game Events: Counter
   CounterCreated = "CounterCreated",
   CounterDeleted = "CounterDeleted",
-  CounterValAdded = "CounterValAdded",
-  CounterValRemoved = "CounterValRemoved",
-  CounterValChanged = "CounterValChanged",
+  CounterValsChanged = "CounterValsChanged",
   CounterMoved = "CounterMoved",
   CounterRotated = "CounterRotated",
 

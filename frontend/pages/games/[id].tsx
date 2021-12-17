@@ -16,14 +16,14 @@ const Room: React.FC = () => {
   useEffect(() => {
     socket.on(Event.Connection, () => {
       console.log("socket connected");
-      socket.emit(Event.JoinedRoom, roomID);
+      socket.emit(Event.PlayerJoined, roomID);
       console.log(`sent room ID ${roomID} to server`);
     });
 
-    socket.on(Event.UpdatedGameState, (newGameState: Game) => {
-      setGameState(newGameState);
-      console.log(`received game state update: ${newGameState}`);
-    });
+    // socket.on(Event.UpdatedGameState, (newGameState: Game) => {
+    //   setGameState(newGameState);
+    //   console.log(`received game state update: ${newGameState}`);
+    // });
 
     return () => {
       socket.disconnect();

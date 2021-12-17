@@ -16,20 +16,11 @@ const io = new Server(httpServer);
 io.on("connection", handleConnect);
 httpServer.listen(8080);
 
-// run whenever a client establishes socket.io "websocket" connection to server
 function handleConnect(socket: Socket) {
   const ipAddress = socket.handshake.address;
   console.log(`${ipAddress} connected`);
 
-  socket.on("joinedRoom", handleJoinedRoom(socket));
-  socket.on("updatedGameState", handleUpdatedGameState(socket));
-  socket.on("disconnecting", handleDisconnecting(socket));
-}
-
-// run whenever a client emits a "joinedRoom" event
-function handleJoinedRoom(socket: Socket) {
-  const ipAddress = socket.handshake.address;
-  return (roomID: string) => {
+  socket.on("joinedRoom", (roomID: string) => {
     console.log(`${ipAddress} tried to join room ${roomID}`);
     if (ipAddress in players && players[ipAddress] !== roomID) {
       const oldRoomID = players[ipAddress];
@@ -53,12 +44,9 @@ function handleJoinedRoom(socket: Socket) {
     io.to(roomID).emit("updatedGameState", gameState);
     console.log(`sent game state update to room ${roomID}`);
     console.log(`updated game state: `, gameStr(gameState));
-  };
-}
+  });
 
-function handleUpdatedGameState(socket: Socket) {
-  const ipAddress = socket.handshake.address;
-  return (gameState: Game) => {
+  socket.on("updatedGameState", (gameState: Game) => {
     const roomID = players[ipAddress];
     rooms[roomID] = gameState;
     console.log(`received game state update from ${ipAddress}`);
@@ -66,12 +54,9 @@ function handleUpdatedGameState(socket: Socket) {
     io.to(roomID).emit("updatedGameState", gameState);
     console.log(`sent game state update to room ${roomID}`);
     console.log(`updated game state: `, gameStr(gameState));
-  };
-}
+  });
 
-function handleDisconnecting(socket: Socket) {
-  const ipAddress = socket.handshake.address;
-  return () => {
+  socket.on("disconnecting", () => {
     console.log(`${ipAddress} disconnected`);
     if (ipAddress in players) {
       const roomID = players[ipAddress];
@@ -97,5 +82,5 @@ function handleDisconnecting(socket: Socket) {
         }
       }
     }
-  };
+  });
 }

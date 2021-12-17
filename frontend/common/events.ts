@@ -1,4 +1,4 @@
-export enum Events {
+export enum Event {
   Connection = "connection",
   JoinedRoom = "joinedRoom",
   UpdatedGameState = "updatedGameState",

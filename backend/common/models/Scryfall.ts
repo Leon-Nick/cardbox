@@ -12,23 +12,23 @@ export interface ScryfallData {
 
   // Gameplay Fields
 
-  oversized: boolean;
-  reserved: boolean;
+  // oversized: boolean;
+  // reserved: boolean;
 
   cmc: number;
-  edhrec_rank: number;
+  // edhrec_rank: number;
 
   loyalty?: number;
   power?: number;
   toughness?: number;
 
-  color_identity: Color[];
-  color_indicator: Color[];
+  // color_identity: Color[];
+  // color_indicator: Color[];
   colors: Color[];
   layout: Layout;
-  legalities: Record<Format, Legality>;
+  // legalities: Record<Format, Legality>;
 
-  all_parts?: RelatedCard[];
+  // all_parts?: RelatedCard[];
   card_faces?: CardFace[];
   produced_mana?: Color[];
 
@@ -36,63 +36,63 @@ export interface ScryfallData {
   name: string;
   type_line: string;
 
-  hand_modifier?: string;
-  life_modifier?: string;
+  // hand_modifier?: string;
+  // life_modifier?: string;
   mana_cost?: string;
   oracle_text?: string;
 
   // Print Fields
 
-  booster: boolean;
-  digital: boolean;
-  full_art: boolean;
-  highres_image: boolean;
-  reprint: boolean;
-  story_spotlight: boolean;
-  textless: boolean;
-  variation: boolean;
+  // booster: boolean;
+  // digital: boolean;
+  // full_art: boolean;
+  // highres_image: boolean;
+  // reprint: boolean;
+  // story_spotlight: boolean;
+  // textless: boolean;
+  // variation: boolean;
 
-  content_warning?: boolean;
+  // content_warning?: boolean;
 
-  card_back_id: string;
-  collector_number: string;
-  scryfall_set_uri: string;
-  set_name: string;
-  set_search_uri: string;
-  set_type: string;
-  set_uri: string;
-  set: string;
-  set_id: string;
+  // card_back_id: string;
+  // collector_number: string;
+  // scryfall_set_uri: string;
+  // set_name: string;
+  // set_search_uri: string;
+  // set_type: string;
+  // set_uri: string;
+  // set: string;
+  // set_id: string;
 
-  artist?: string;
+  // artist?: string;
   flavor_name?: string;
   flavor_text?: string;
-  illustration_id?: string;
+  // illustration_id?: string;
   printed_name?: string;
   printed_text?: string;
   printed_type_line?: string;
-  variation_of?: string;
-  watermark?: string;
+  // variation_of?: string;
+  // watermark?: string;
 
-  border_color: "black" | "white" | "borderless" | "silver" | "gold";
-  frame: "1993" | "1997" | "2003" | "2015" | "future";
-  image_status: "missing" | "placeholder" | "lowres" | "highres_scan";
-  rarity: "common" | "uncommon" | "rare" | "special" | "mythic" | "bonus";
-  finishes: ("foil" | "nonfoil" | "etched" | "glossy")[];
-  games: ("paper" | "arena" | "mtgo")[];
+  // border_color: "black" | "white" | "borderless" | "silver" | "gold";
+  // frame: "1993" | "1997" | "2003" | "2015" | "future";
+  // image_status: "missing" | "placeholder" | "lowres" | "highres_scan";
+  // rarity: "common" | "uncommon" | "rare" | "special" | "mythic" | "bonus";
+  // finishes: ("foil" | "nonfoil" | "etched" | "glossy")[];
+  // games: ("paper" | "arena" | "mtgo")[];
 
-  security_stamp?: "oval" | "triangle" | "acorn" | "arena";
+  // security_stamp?: "oval" | "triangle" | "acorn" | "arena";
 
-  releasted_at: Date;
+  // releasted_at: Date;
   related_uris: Record<string, URL>;
 
   image_uris?: Record<ImageType, URI>;
-  frame_effects?: FrameEffect[];
-  preview?: {
-    previewed_at: Date;
-    source_uri: string;
-    source: string;
-  };
+  // frame_effects?: FrameEffect[];
+  // preview?: {
+  //   previewed_at: Date;
+  //   source_uri: string;
+  //   source: string;
+  // };
 }
 
 type Format = string;

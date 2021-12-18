@@ -7,3 +7,11 @@ const randomUrlChar = (): string =>
 export function randomRoomID(): string {
   return Array(6).fill(null).map(randomUrlChar).join("");
 }
+
+export function shuffle<T>(array: T[]): void {
+  let rand: number;
+  for (let i = 0; i < array.length; i++) {
+    rand = Math.floor(Math.random() * array.length);
+    [array[i], array[rand]] = [array[rand], array[i]];
+  }
+}

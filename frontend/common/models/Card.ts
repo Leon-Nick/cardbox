@@ -1,31 +1,27 @@
-import { randomUUID } from "crypto";
 import { Physical } from "./Physical";
-import { ScryfallData } from "./Scryfall";
+import { ScryfallData } from "./ScryfallData";
+
+export interface CardInitArgs {
+  ID: string;
+  data: ScryfallData;
+  height: string;
+  width: string;
+  x: number;
+  y: number;
+}
 
 export class Card implements Physical {
-  public ID: string;
-  public data: ScryfallData;
+  public ID!: string;
+  public data!: ScryfallData;
 
-  public height: string;
-  public width: string;
-  public x: number | null;
-  public y: number | null;
-  public rotation: number | null;
+  public height!: string;
+  public width!: string;
+  public x!: number;
+  public y!: number;
+  public rotation: number;
 
-  constructor(
-    data: ScryfallData,
-    height: string,
-    width: string,
-    x: number,
-    y: number
-  ) {
-    this.ID = randomUUID();
-    this.data = data;
-
-    this.height = height;
-    this.width = width;
-    this.x = x;
-    this.y = y;
+  constructor(args: CardInitArgs) {
+    Object.assign(this, args);
     this.rotation = 0;
   }
 }

@@ -1,30 +1,26 @@
-import { randomUUID } from "crypto";
 import { Physical } from "./Physical";
 
+export interface CounterInitArgs {
+  ID: string;
+  vals: number[];
+  height: string;
+  width: string;
+  x: number;
+  y: number;
+}
+
 export class Counter implements Physical {
-  public ID: string;
-  public vals: number[];
+  public ID!: string;
+  public vals!: number[];
 
-  public height: string;
-  public width: string;
-  public x: number | null;
-  public y: number | null;
-  public rotation: number | null;
+  public height!: string;
+  public width!: string;
+  public x!: number;
+  public y!: number;
+  public rotation: number;
 
-  constructor(
-    vals: number[] = [0],
-    height: string,
-    width: string,
-    x: number,
-    y: number
-  ) {
-    this.ID = randomUUID();
-    this.vals = vals;
-
-    this.height = height;
-    this.width = width;
-    this.x = x;
-    this.y = y;
+  constructor(args: CounterInitArgs) {
+    Object.assign(this, args);
     this.rotation = 0;
   }
 }

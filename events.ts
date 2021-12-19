@@ -1,4 +1,4 @@
-export enum Event {
+export enum Events {
   // Socket.io Events
   Connection = "connection",
   Disconnecting = "disconnecting",

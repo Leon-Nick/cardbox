@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 // common
-import { Event } from "./common/events";
+import { Event } from "./events";
 import {
   Card,
   CardInitArgs,
@@ -14,7 +14,7 @@ import {
   GameInitArgs,
   gameStr,
   ScryfallData,
-} from "./common/models";
+} from "./models";
 
 // map of each room ID to its respective game session
 const rooms: Record<string, Game> = {};

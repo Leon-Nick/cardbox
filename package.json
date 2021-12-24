@@ -1,25 +1,16 @@
 {
-  "dependencies": {
-    "body-parser": "^1.19.1",
-    "express": "^4.17.1",
-    "http": "^0.0.1-security",
-    "socket.io": "^4.4.0"
-  },
+  "workspaces": [
+    "browser",
+    "server"
+  ],
   "devDependencies": {
-    "@types/express": "^4.17.13",
-    "eslint": "^8.4.1",
-    "nodemon": "^2.0.15",
-    "sass": "^1.45.0",
-    "ts-node": "^10.4.0",
-    "typescript": "^4.5.3"
+    "concurrently": "^6.5.1"
   },
   "scripts": {
-    "start": "tsc && node --unhandled-rejections=strict ./build",
-    "debug": "export DEBUG=* && npm run start",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm run ts-reload && npm run node-reload & npm run scss-reload",
-    "node-reload": "nodemon ./build",
-    "ts-reload": "tsc -w",
-    "scss-reload": "sass -w styles:build/styles"
+    "dev": "concurrently \"npm:browser-watch\" \"npm:server-watch\" \"npm:server-dev\"",
+    "browser-watch": "npm run --workspace=browser watch",
+    "browser-dev": "npm run --workspace=browser dev",
+    "server-watch": "npm run --workspace=server watch",
+    "server-dev": "nodemon ./server/dist/server.js"
   }
 }

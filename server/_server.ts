@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 // common
-import { Events } from "./shared/events";
+import { EventNames } from "./shared/events";
 import {
   Card,
   CardInitArgs,
@@ -30,14 +30,14 @@ httpServer.listen(3000);
 
 const io = new Server(httpServer);
 
-io.on(Events.Connection, (socket: Socket) => {
+io.on(EventNames.Connection, (socket: Socket) => {
   // use this client's IP address as their identifier
   const ipAddress = socket.handshake.address;
   console.log(`player ${ipAddress} connected`);
 
   // Out-Of-Game and Socket.io Events
 
-  socket.on(Events.Disconnecting, () => {
+  socket.on(EventNames.Disconnecting, () => {
     console.log(`${ipAddress} disconnected`);
     if (ipAddress in players) {
       const roomID = players[ipAddress];
@@ -59,7 +59,7 @@ io.on(Events.Connection, (socket: Socket) => {
             ` player ${ipAddress} was host; new host is ${gameState.hostID}`
           );
 
-          io.to(roomID).emit(Events.PlayerLeft, ipAddress);
+          io.to(roomID).emit(EventNames.PlayerLeft, ipAddress);
           console.log(`told room ${roomID} that player ${ipAddress} left`);
           console.log(`current game state: `, gameStr(gameState));
         }
@@ -67,7 +67,7 @@ io.on(Events.Connection, (socket: Socket) => {
     }
   });
 
-  socket.on(Events.PlayerJoined, (roomID: string) => {
+  socket.on(EventNames.PlayerJoined, (roomID: string) => {
     console.log(`player ${ipAddress} tried to join room ${roomID}`);
 
     if (ipAddress in players && players[ipAddress] !== roomID) {
@@ -83,13 +83,13 @@ io.on(Events.Connection, (socket: Socket) => {
 
     if (roomID in rooms) {
       rooms[roomID].players.add(ipAddress);
-      io.to(roomID).emit(Events.PlayerJoined, ipAddress);
+      io.to(roomID).emit(EventNames.PlayerJoined, ipAddress);
 
       console.log(`player ${ipAddress} joined room ${roomID}`);
     } else {
       const args: GameInitArgs = { roomID, hostID: ipAddress };
       rooms[roomID] = new Game(args);
-      io.to(roomID).emit(Events.RoomCreated, args);
+      io.to(roomID).emit(EventNames.RoomCreated, args);
 
       console.log(
         `created new room ${roomID} with player ${ipAddress} as host`
@@ -100,7 +100,7 @@ io.on(Events.Connection, (socket: Socket) => {
 
   // In-Game Events: Card
 
-  socket.on(Events.CardCreated, (args: CardInitArgs) => {
+  socket.on(EventNames.CardCreated, (args: CardInitArgs) => {
     const roomID = players[ipAddress];
     const room = rooms[roomID];
 
@@ -111,12 +111,12 @@ io.on(Events.Connection, (socket: Socket) => {
     } else {
       const card = new Card(args);
       room.cards[card.ID] = card;
-      io.to(roomID).emit(Events.CardCreated, args);
+      io.to(roomID).emit(EventNames.CardCreated, args);
       console.log(`created card ${card.data.name} with ID ${card.ID}`);
     }
   });
 
-  socket.on(Events.CardDeleted, (cardID: string) => {
+  socket.on(EventNames.CardDeleted, (cardID: string) => {
     const roomID = players[ipAddress];
     const room = rooms[roomID];
 
@@ -124,14 +124,14 @@ io.on(Events.Connection, (socket: Socket) => {
     if (cardID in room.cards) {
       const cardName = room.cards[cardID].data.name;
       delete room.cards[cardID];
-      io.to(roomID).emit(Events.CardDeleted, cardID);
+      io.to(roomID).emit(EventNames.CardDeleted, cardID);
       console.log(`deleted card ${cardName} with ID ${cardID}`);
     } else {
       console.log(`cannot delete card with ID ${cardID}; does not exist`);
     }
   });
 
-  socket.on(Events.CardMoved, (cardID: string, x: number, y: number) => {
+  socket.on(EventNames.CardMoved, (cardID: string, x: number, y: number) => {
     const roomID = players[ipAddress];
     const room = rooms[roomID];
 
@@ -142,7 +142,7 @@ io.on(Events.Connection, (socket: Socket) => {
       const oldY = card.y;
       card.x = x;
       card.y = y;
-      io.to(roomID).emit(Events.CardMoved, cardID, x, y);
+      io.to(roomID).emit(EventNames.CardMoved, cardID, x, y);
       console.log(
         `card ${card.data.name} moved from [${oldX},${oldY}] to [${x}, ${y}]`
       );
@@ -151,7 +151,7 @@ io.on(Events.Connection, (socket: Socket) => {
     }
   });
 
-  socket.on(Events.CardRotated, (cardID: string, rotation: number) => {
+  socket.on(EventNames.CardRotated, (cardID: string, rotation: number) => {
     const roomID = players[ipAddress];
     const room = rooms[roomID];
 
@@ -160,7 +160,7 @@ io.on(Events.Connection, (socket: Socket) => {
       const card = room.cards[cardID];
       const oldRotation = card.rotation;
       card.rotation = rotation;
-      io.to(roomID).emit(Events.CardRotated, cardID, rotation);
+      io.to(roomID).emit(EventNames.CardRotated, cardID, rotation);
       console.log(
         `changed rotation of card ${card.data.name} from ${oldRotation} to ${rotation}`
       );
@@ -171,7 +171,7 @@ io.on(Events.Connection, (socket: Socket) => {
 
   // In-Game Events: Counter
 
-  socket.on(Events.CounterCreated, (args: CounterInitArgs) => {
+  socket.on(EventNames.CounterCreated, (args: CounterInitArgs) => {
     const roomID = players[ipAddress];
     const room = rooms[roomID];
 
@@ -182,84 +182,97 @@ io.on(Events.Connection, (socket: Socket) => {
     } else {
       const counter = new Counter(args);
       room.counters[counter.ID] = counter;
-      io.to(roomID).emit(Events.CounterCreated, args);
+      io.to(roomID).emit(EventNames.CounterCreated, args);
       console.log(`created counter with ID ${counter.ID}`);
     }
   });
 
-  socket.on(Events.CounterDeleted, (counterID: string) => {
+  socket.on(EventNames.CounterDeleted, (counterID: string) => {
     const roomID = players[ipAddress];
     const room = rooms[roomID];
 
     console.log(`in room ${roomID}:`);
     if (counterID in room.counters) {
       delete room.counters[counterID];
-      io.to(roomID).emit(Events.CounterDeleted, counterID);
+      io.to(roomID).emit(EventNames.CounterDeleted, counterID);
       console.log(`deleted counter ${counterID}`);
     } else {
       console.log(`cannot delete counter ${counterID}; does not exist`);
     }
   });
 
-  socket.on(Events.CounterValsChanged, (counterID: string, vals: number[]) => {
-    const roomID = players[ipAddress];
-    const room = rooms[roomID];
+  socket.on(
+    EventNames.CounterValsChanged,
+    (counterID: string, vals: number[]) => {
+      const roomID = players[ipAddress];
+      const room = rooms[roomID];
 
-    console.log(`in room ${roomID}:`);
-    if (counterID in room.counters) {
-      const counter = room.counters[counterID];
-      const oldVals = counter.vals;
-      counter.vals = vals;
-      io.to(roomID).emit(Events.CounterValsChanged, counterID, vals);
-      console.log(
-        `changed vals of counter ${counterID} from [${oldVals}] to [${vals}]`
-      );
-    } else {
-      console.log(`cannot change vals of counter ${counterID}; does not exist`);
+      console.log(`in room ${roomID}:`);
+      if (counterID in room.counters) {
+        const counter = room.counters[counterID];
+        const oldVals = counter.vals;
+        counter.vals = vals;
+        io.to(roomID).emit(EventNames.CounterValsChanged, counterID, vals);
+        console.log(
+          `changed vals of counter ${counterID} from [${oldVals}] to [${vals}]`
+        );
+      } else {
+        console.log(
+          `cannot change vals of counter ${counterID}; does not exist`
+        );
+      }
     }
-  });
+  );
 
-  socket.on(Events.CounterMoved, (counterID: string, x: number, y: number) => {
-    const roomID = players[ipAddress];
-    const room = rooms[roomID];
+  socket.on(
+    EventNames.CounterMoved,
+    (counterID: string, x: number, y: number) => {
+      const roomID = players[ipAddress];
+      const room = rooms[roomID];
 
-    console.log(`in room ${roomID}:`);
-    if (counterID in room.counters) {
-      const counter = room.counters[counterID];
-      const oldX = counter.x;
-      const oldY = counter.y;
-      counter.x = x;
-      counter.y = y;
-      io.to(roomID).emit(Events.CounterMoved, counterID, x, y);
-      console.log(
-        `counter ${counterID} moved from [${oldX}, ${oldY}] to [${x}, ${y}]`
-      );
-    } else {
-      console.log(`cannot move counter ${counterID}; does not exist`);
+      console.log(`in room ${roomID}:`);
+      if (counterID in room.counters) {
+        const counter = room.counters[counterID];
+        const oldX = counter.x;
+        const oldY = counter.y;
+        counter.x = x;
+        counter.y = y;
+        io.to(roomID).emit(EventNames.CounterMoved, counterID, x, y);
+        console.log(
+          `counter ${counterID} moved from [${oldX}, ${oldY}] to [${x}, ${y}]`
+        );
+      } else {
+        console.log(`cannot move counter ${counterID}; does not exist`);
+      }
     }
-  });
+  );
 
-  socket.on(Events.CounterRotated, (counterID: string, rotation: number) => {
-    const roomID = players[ipAddress];
-    const room = rooms[roomID];
+  socket.on(
+    EventNames.CounterRotated,
+    (counterID: string, rotation: number) => {
+      const roomID = players[ipAddress];
+      const room = rooms[roomID];
 
-    console.log(`in room ${roomID}:`);
-    if (counterID in room.counters) {
-      const counter = room.counters[counterID];
-      const oldRotation = counter.rotation;
-      counter.rotation = rotation;
-      io.to(roomID).emit(Events.CounterRotated, counterID, rotation);
-      console.log(
-        `changed rotation of counter ${counterID} from ${oldRotation} to ${rotation}`
-      );
-    } else {
-      console.log(`cannot rotate counter with ID ${counterID}; does not exist`);
+      console.log(`in room ${roomID}:`);
+      if (counterID in room.counters) {
+        const counter = room.counters[counterID];
+        const oldRotation = counter.rotation;
+        counter.rotation = rotation;
+        io.to(roomID).emit(EventNames.CounterRotated, counterID, rotation);
+        console.log(
+          `changed rotation of counter ${counterID} from ${oldRotation} to ${rotation}`
+        );
+      } else {
+        console.log(
+          `cannot rotate counter with ID ${counterID}; does not exist`
+        );
+      }
     }
-  });
+  );
 
   // In-Game Events: CardStack
 
-  socket.on(Events.CardStackCreated, (args: CardStackInitArgs) => {
+  socket.on(EventNames.CardStackCreated, (args: CardStackInitArgs) => {
     const roomID = players[ipAddress];
     const room = rooms[roomID];
 
@@ -270,19 +283,19 @@ io.on(Events.Connection, (socket: Socket) => {
     } else {
       const cardStack = new CardStack(args);
       room.cardStacks[cardStack.ID] = cardStack;
-      io.to(roomID).emit(Events.CardStackCreated, args);
+      io.to(roomID).emit(EventNames.CardStackCreated, args);
       console.log(`created cardStack with ID ${cardStack.ID}`);
     }
   });
 
-  socket.on(Events.CardStackDeleted, (cardStackID: string) => {
+  socket.on(EventNames.CardStackDeleted, (cardStackID: string) => {
     const roomID = players[ipAddress];
     const room = rooms[roomID];
 
     console.log(`in room ${roomID}:`);
     if (cardStackID in room.cardStacks) {
       delete room.cardStacks[cardStackID];
-      io.to(roomID).emit(Events.CardStackDeleted, cardStackID);
+      io.to(roomID).emit(EventNames.CardStackDeleted, cardStackID);
       console.log(`deleted cardStack ${cardStackID}`);
     } else {
       console.log(`cannot delete cardStack ${cardStackID}; does not exist`);
@@ -290,7 +303,7 @@ io.on(Events.Connection, (socket: Socket) => {
   });
 
   socket.on(
-    Events.CardStackShuffled,
+    EventNames.CardStackShuffled,
     (cardStackID: string, cards: ScryfallData[]) => {
       const roomID = players[ipAddress];
       const room = rooms[roomID];
@@ -299,7 +312,7 @@ io.on(Events.Connection, (socket: Socket) => {
       if (cardStackID in room.cardStacks) {
         const cardStack = room.cardStacks[cardStackID];
         cardStack.cards = cards;
-        io.to(roomID).emit(Events.CardStackShuffled);
+        io.to(roomID).emit(EventNames.CardStackShuffled);
         console.log(`shuffled cardStack ${cardStackID}`);
       } else {
         console.log(`cannot shuffle cardStack ${cardStackID}; does not exist`);
@@ -308,7 +321,7 @@ io.on(Events.Connection, (socket: Socket) => {
   );
 
   socket.on(
-    Events.CardStackModified,
+    EventNames.CardStackModified,
     (cardStackID: string, cards: ScryfallData[]) => {
       const roomID = players[ipAddress];
       const room = rooms[roomID];
@@ -317,7 +330,7 @@ io.on(Events.Connection, (socket: Socket) => {
       if (cardStackID in room.cardStacks) {
         const cardStack = room.cardStacks[cardStackID];
         cardStack.cards = cards;
-        io.to(roomID).emit(Events.CardStackModified);
+        io.to(roomID).emit(EventNames.CardStackModified);
         console.log(`modified cardStack ${cardStackID}`);
       } else {
         console.log(`cannot modify cardStack ${cardStackID}; does not exist`);
@@ -326,7 +339,7 @@ io.on(Events.Connection, (socket: Socket) => {
   );
 
   socket.on(
-    Events.CardStackMoved,
+    EventNames.CardStackMoved,
     (cardStackID: string, x: number, y: number) => {
       const roomID = players[ipAddress];
       const room = rooms[roomID];
@@ -338,7 +351,7 @@ io.on(Events.Connection, (socket: Socket) => {
         const oldY = cardStack.y;
         cardStack.x = x;
         cardStack.y = y;
-        io.to(roomID).emit(Events.CardStackMoved, cardStackID, x, y);
+        io.to(roomID).emit(EventNames.CardStackMoved, cardStackID, x, y);
         console.log(
           `cardStack ${cardStackID} moved from [${oldX}, ${oldY}] to [${x}, ${y}]`
         );
@@ -349,7 +362,7 @@ io.on(Events.Connection, (socket: Socket) => {
   );
 
   socket.on(
-    Events.CardStackRotated,
+    EventNames.CardStackRotated,
     (cardStackID: string, rotation: number) => {
       const roomID = players[ipAddress];
       const room = rooms[roomID];
@@ -359,7 +372,7 @@ io.on(Events.Connection, (socket: Socket) => {
         const cardStack = room.cardStacks[cardStackID];
         const oldRotation = cardStack.rotation;
         cardStack.rotation = rotation;
-        io.to(roomID).emit(Events.CardStackRotated, cardStackID, rotation);
+        io.to(roomID).emit(EventNames.CardStackRotated, cardStackID, rotation);
         console.log(
           `changed rotation of cardStack ${cardStackID} from ${oldRotation} to ${rotation}`
         );

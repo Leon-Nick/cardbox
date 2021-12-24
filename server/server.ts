@@ -23,9 +23,12 @@ const rooms: Record<string, Game> = {};
 const players: Record<string, string> = {};
 
 const app = express();
+app.use(express.static("browser/dist"));
+
 const httpServer = createServer(app);
+httpServer.listen(3000);
+
 const io = new Server(httpServer);
-httpServer.listen(8080);
 
 io.on(Events.Connection, (socket: Socket) => {
   // use this client's IP address as their identifier

@@ -1,0 +1,15 @@
+{
+  "name": "browser",
+  "dependencies": {
+    "pixi.js": "^6.2.1",
+    "socket.io-client": "^4.4.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.0.1",
+    "parcel": "^2.0.1"
+  },
+  "scripts": {
+    "dev": "parcel index.html",
+    "watch": "parcel watch index.html"
+  }
+}

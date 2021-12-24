@@ -1,0 +1,16 @@
+{
+  "workspaces": [
+    "browser",
+    "server"
+  ],
+  "devDependencies": {
+    "concurrently": "^6.5.1"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm:browser-watch\" \"npm:server-watch\" \"npm:server-dev\"",
+    "browser-watch": "npm run --workspace=browser watch",
+    "browser-dev": "npm run --workspace=browser dev",
+    "server-watch": "npm run --workspace=server watch",
+    "server-dev": "nodemon ./server/dist/server.js"
+  }
+}

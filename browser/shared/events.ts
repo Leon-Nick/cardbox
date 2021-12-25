@@ -1,35 +1,41 @@
-export enum Events {
-  // Socket.io Events
-  Connection = "connection",
-  Disconnecting = "disconnecting",
+import {
+  CardInitArgs,
+  CardStackInitArgs,
+  CounterInitArgs,
+  ScryfallData,
+} from "./models";
 
+export interface Events {
   // Out-Of-Game Events
-  RoomCreated = "RoomCreated",
-  RoomDeleted = "RoomDeleted",
-  RoomUnlocked = "RoomUnlocked",
-  RoomLocked = "RoomLocked",
-  PlayerJoined = "PlayerJoined",
-  PlayerLeft = "PlayerLeft",
-  HostChanged = "HostChanged",
+  JoinRequested: (roomID: string) => void;
+  PlayerJoined: (playerID: string) => void;
+  PlayerLeft: (playerID: string) => void;
+  HostChanged: (newHostID: string) => void;
 
   // In-Game Events: Card
-  CardCreated = "CardCreated",
-  CardDeleted = "CardDeleted",
-  CardMoved = "CardMoved",
-  CardRotated = "CardRotated",
+  CardCreated: (args: CardInitArgs) => void;
+  CardDeleted: (cardID: string) => void;
+  CardMoved: (cardID: string, x: number, y: number) => void;
+  CardRotated: (cardID: string, rotation: number) => void;
 
   // In-Game Events: Counter
-  CounterCreated = "CounterCreated",
-  CounterDeleted = "CounterDeleted",
-  CounterValsChanged = "CounterValsChanged",
-  CounterMoved = "CounterMoved",
-  CounterRotated = "CounterRotated",
+  CounterCreated: (args: CounterInitArgs) => void;
+  CounterDeleted: (counterID: string) => void;
+  CounterValsChanged: (counterID: string, vals: number[]) => void;
+  CounterMoved: (counterID: string, x: number, y: number) => void;
+  CounterRotated: (counterID: string, rotation: number) => void;
 
   // In-Game Events: CardStack
-  CardStackCreated = "CardStackCreated",
-  CardStackDeleted = "CardStackDeleted",
-  CardStackShuffled = "CardStackShuffled",
-  CardStackModified = "CardStackModified",
-  CardStackMoved = "CardStackMoved",
-  CardStackRotated = "CardStackRotated",
+  CardStackCreated: (args: CardStackInitArgs) => void;
+  CardStackDeleted: (cardStackID: string) => void;
+  CardStackShuffled: (cardStackID: string, cards: ScryfallData[]) => void;
+  CardStackModified: (cardStackID: string, cards: ScryfallData[]) => void;
+  CardStackMoved: (cardStackID: string, x: number, y: number) => void;
+  CardStackRotated: (cardStackID: string, rotation: number) => void;
 }
+
+export interface ServerToClientEvents extends Events {}
+
+export interface ClientToServerEvents extends Events {}
+
+export interface InterServerEvents extends Events {}

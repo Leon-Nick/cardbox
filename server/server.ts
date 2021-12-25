@@ -61,6 +61,8 @@ io.on("connection", (socket) => {
       rooms[roomID] = new Game(args);
       console.log(`created new room ${roomID} with host ${playerID}`);
     }
+
+    socket.emit("GameUpdated", JSON.stringify(rooms[roomID]));
   });
 
   socket.on("disconnecting", () => {

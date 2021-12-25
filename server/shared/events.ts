@@ -2,11 +2,13 @@ import {
   CardInitArgs,
   CardStackInitArgs,
   CounterInitArgs,
+  Game,
   ScryfallData,
 } from "./models";
 
 export interface Events {
   // Out-Of-Game Events
+  GameUpdated: (gameJSON: string) => void;
   JoinRequested: (roomID: string) => void;
   PlayerJoined: (playerID: string) => void;
   PlayerLeft: (playerID: string) => void;

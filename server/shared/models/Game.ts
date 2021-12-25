@@ -29,6 +29,11 @@ export class Game {
     this.counters = {};
     this.cardStacks = {};
   }
+
+  toJSON() {
+    const json = { ...this, players: Array.from(this.players) };
+    return JSON.stringify(json);
+  }
 }
 
 export function gameStr(game: Game): string {

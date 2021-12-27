@@ -1,3 +1,15 @@
 # multiplayer-card-sandbox
 
-A free browser-based online multiplayer card sandbox. Written in Typescript.
+TL;DR:
+- in-browser card sandbox
+- free
+- multiplayer
+- no account needed
+
+Made using:
+- Sass
+- Typescript
+- Express
+- Socket.io
+- Pixi
+- Parcel

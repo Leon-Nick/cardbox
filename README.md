@@ -1,4 +1,4 @@
-# multiplayer-card-sandbox
+# cardbox
 
 TL;DR:
 

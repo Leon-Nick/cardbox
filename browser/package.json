@@ -2,11 +2,13 @@
   "name": "browser",
   "dependencies": {
     "pixi.js": "^6.2.1",
-    "socket.io-client": "^4.4.0"
+    "socket.io-client": "^4.4.0",
+    "tweedle.js": "^2.0.0"
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.0.1",
-    "parcel": "^2.0.1"
+    "parcel": "^2.0.1",
+    "pixi-stats": "^1.0.7"
   },
   "scripts": {
     "dev": "parcel index.html",

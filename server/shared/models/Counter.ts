@@ -1,4 +1,4 @@
-import { Physical } from "./Physical";
+import { GameObject } from "./GameObject";
 
 export interface CounterInitArgs {
   ID: string;
@@ -9,7 +9,7 @@ export interface CounterInitArgs {
   y: number;
 }
 
-export class Counter implements Physical {
+export class Counter implements GameObject {
   public ID!: string;
   public vals!: number[];
 

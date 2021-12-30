@@ -1,4 +1,4 @@
-export interface Physical {
+export interface GameObject {
   height: string;
   width: string;
   x: number;

@@ -1,4 +1,4 @@
-import { Physical } from "./Physical";
+import { GameObject } from "./GameObject";
 import { ScryfallData } from "./ScryfallData";
 
 export interface CardStackInitArgs {
@@ -10,7 +10,7 @@ export interface CardStackInitArgs {
   y: number;
 }
 
-export class CardStack implements Physical {
+export class CardStack implements GameObject {
   public ID!: string;
   public cards!: ScryfallData[];
 

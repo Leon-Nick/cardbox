@@ -3,6 +3,9 @@
     "browser",
     "server"
   ],
+  "dependencies": {
+    "pixi.js": "^6.2.1"
+  },
   "devDependencies": {
     "concurrently": "^6.5.1"
   },

@@ -1,7 +1,6 @@
 {
   "name": "browser",
   "dependencies": {
-    "pixi.js": "^6.2.1",
     "socket.io-client": "^4.4.0",
     "tweedle.js": "^2.0.0"
   },

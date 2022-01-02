@@ -1,9 +1,9 @@
 export interface PlayerInitArgs {
-  playerID: string;
+  ID: string;
   roomID: string;
 }
 export class Player {
-  public playerID!: string;
+  public ID!: string;
   public roomID!: string;
 
   constructor(args: PlayerInitArgs) {

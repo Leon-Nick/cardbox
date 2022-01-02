@@ -1,3 +1,4 @@
 export * from "./Game";
-export * from "./ScryfallData";
 export * from "./Player";
+export * from "./GameObjects";
+export * from "./ScryfallData";

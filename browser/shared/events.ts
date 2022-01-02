@@ -1,39 +1,29 @@
-import {
-  CardInitArgs,
-  CardStackInitArgs,
-  CounterInitArgs,
-  Game,
-  ScryfallData,
-} from "./models";
+import { Game, Player, ScryfallData } from "./models";
+import { InitArgs } from "./models";
 
 export interface Events {
   // Out-Of-Game Events
-  GameUpdated: (gameJSON: string) => void;
+  GameStateRequested: (gameState: Game) => void;
   JoinRequested: (roomID: string) => void;
-  PlayerJoined: (playerID: string) => void;
-  PlayerLeft: (playerID: string) => void;
+  PlayerJoined: (player: Player) => void;
+  PlayerLeft: (ID: string) => void;
   HostChanged: (newHostID: string) => void;
 
+  // In-Game Events: GameObject
+  ObjectMoved: (ID: string, x: number, y: number) => void;
+  ObjectRotated: (ID: string, angle: number) => void;
+  ObjectDeleted: (ID: string) => void;
+
   // In-Game Events: Card
-  CardCreated: (args: CardInitArgs) => void;
-  CardDeleted: (cardID: string) => void;
-  CardMoved: (cardID: string, x: number, y: number) => void;
-  CardRotated: (cardID: string, rotation: number) => void;
+  CardCreated: (args: InitArgs<ScryfallData>) => void;
+
+  // In-Game Events: Deck
+  DeckCreated: (args: InitArgs<ScryfallData[]>) => void;
+  DeckChanged: (ID: string, data: ScryfallData[], shuffled: boolean) => void;
 
   // In-Game Events: Counter
-  CounterCreated: (args: CounterInitArgs) => void;
-  CounterDeleted: (counterID: string) => void;
-  CounterValsChanged: (counterID: string, vals: number[]) => void;
-  CounterMoved: (counterID: string, x: number, y: number) => void;
-  CounterRotated: (counterID: string, rotation: number) => void;
-
-  // In-Game Events: CardStack
-  CardStackCreated: (args: CardStackInitArgs) => void;
-  CardStackDeleted: (cardStackID: string) => void;
-  CardStackShuffled: (cardStackID: string, cards: ScryfallData[]) => void;
-  CardStackModified: (cardStackID: string, cards: ScryfallData[]) => void;
-  CardStackMoved: (cardStackID: string, x: number, y: number) => void;
-  CardStackRotated: (cardStackID: string, rotation: number) => void;
+  CounterCreated: (args: InitArgs<number>) => void;
+  CounterChanged: (ID: string, val: number) => void;
 }
 
 export interface ServerToClientEvents extends Events {}

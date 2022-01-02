@@ -3,12 +3,14 @@ import { Container, InteractionEvent, Sprite } from "pixi.js";
 import { ScryfallData } from "./ScryfallData";
 import { assets } from "../assets/manifest";
 
-export type GameObjectSubtype = "Card" | "CardStack" | "Counter";
+export type GameObjectSubtype = "Card" | "Deck" | "Counter";
 
-export interface GameObjectInitArgs {
+export interface InitArgs<T> {
+  data: T;
+
   ID?: string;
-  type: GameObjectSubtype;
-  imageURL: string;
+  x: number;
+  y: number;
 }
 
 export class GameObject {
@@ -18,26 +20,27 @@ export class GameObject {
   sprite: Sprite;
   event?: InteractionEvent;
 
-  constructor(args: GameObjectInitArgs) {
+  constructor(type: GameObjectSubtype, args: InitArgs<string>) {
     this.ID = args.ID ?? randomUUID();
-    this.type = args.type;
-    this.sprite = Sprite.from(args.imageURL);
+    this.type = type;
+    this.sprite = Sprite.from(args.data);
+    this.sprite.x = args.x;
+    this.sprite.y = args.y;
   }
 
   initSprite(stage: Container) {
-    const { sprite } = this;
-    sprite.scale.set(0.3);
-    sprite.anchor.set(0.5);
-    sprite.interactive = true;
-    sprite
+    this.sprite.scale.set(0.3);
+    this.sprite.anchor.set(0.5);
+    this.sprite.interactive = true;
+    this.sprite
       .on("pointerdown", (event: InteractionEvent) => {
         this.event = event;
       })
       .on("pointermove", () => {
         if (this.event?.data) {
           const { x, y } = this.event.data.getLocalPosition(stage);
-          sprite.x = x;
-          sprite.y = y;
+          this.sprite.x = x;
+          this.sprite.y = y;
         }
       })
       .on("pointerup", () => {
@@ -50,51 +53,31 @@ export class GameObject {
 }
 
 export class Card extends GameObject {
-  // in-game info (name, image URL, oracle text, etc)
   data: ScryfallData;
 
-  constructor(data: ScryfallData, ID?: string) {
-    super({
-      imageURL: data.image_uris?.normal ?? assets.island,
-      type: "Card",
-      ID,
-    });
-
-    // TODO: impl. card data import from scryfall
-    this.data = data;
+  constructor(args: InitArgs<ScryfallData>) {
+    const imageURL = args.data.image_uris?.normal ?? assets.island;
+    super("Card", { ...args, data: imageURL });
+    this.data = args.data;
   }
 }
 
-export class CardStack extends GameObject {
-  // in-game info (names, image URLs, oracle text, etc)
-  cards: ScryfallData[];
+export class Deck extends GameObject {
+  data: ScryfallData[];
 
-  constructor(cards: ScryfallData[], ID?: string) {
-    super({
-      imageURL: cards[0].image_uris?.normal ?? assets.island,
-      type: "CardStack",
-      ID,
-    });
-
-    this.cards = cards;
+  constructor(args: InitArgs<ScryfallData[]>) {
+    const imageURL = args.data[0].image_uris?.normal ?? assets.island;
+    super("Deck", { ...args, data: imageURL });
+    this.data = args.data;
   }
 }
 
 export class Counter extends GameObject {
-  constructor(ID?: string) {
-    super({
-      imageURL: assets.burgeoning,
-      type: "Counter",
-      ID,
-    });
-  }
+  data: number;
 
-  get val() {
-    return 0;
-  }
-
-  set val(n: number) {
-    // TODO: impl. set val by modifying this.sprite
-    n = n;
+  constructor(args: InitArgs<number>) {
+    const imageURL = assets.burgeoning;
+    super("Counter", { ...args, data: imageURL });
+    this.data = args.data;
   }
 }

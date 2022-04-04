@@ -6,24 +6,27 @@ import { assets } from "../assets/manifest";
 export type GameObjectSubtype = "Card" | "Deck" | "Counter";
 
 export interface InitArgs<T> {
-  data: T;
-
+  type: GameObjectSubtype;
   ID?: string;
+  data: T;
+  imageURL: string;
   x: number;
   y: number;
 }
 
-export class GameObject {
+export class GameObject<T> {
   type: GameObjectSubtype;
   ID: string;
+  data: T;
 
   sprite: Sprite;
   event?: InteractionEvent;
 
-  constructor(type: GameObjectSubtype, args: InitArgs<string>) {
+  constructor(args: InitArgs<T>) {
+    this.type = args.type;
     this.ID = args.ID ?? randomUUID();
-    this.type = type;
-    this.sprite = Sprite.from(args.data);
+    this.data = args.data;
+    this.sprite = Sprite.from(args.imageURL);
     this.sprite.x = args.x;
     this.sprite.y = args.y;
   }
@@ -52,32 +55,11 @@ export class GameObject {
   }
 }
 
-export class Card extends GameObject {
-  data: ScryfallData;
+export class Card extends GameObject<ScryfallData> {}
+export interface CardInitArgs extends InitArgs<ScryfallData> {}
 
-  constructor(args: InitArgs<ScryfallData>) {
-    const imageURL = args.data.image_uris?.normal ?? assets.island;
-    super("Card", { ...args, data: imageURL });
-    this.data = args.data;
-  }
-}
+export class Deck extends GameObject<ScryfallData[]> {}
+export interface DeckInitArgs extends InitArgs<ScryfallData[]> {}
 
-export class Deck extends GameObject {
-  data: ScryfallData[];
-
-  constructor(args: InitArgs<ScryfallData[]>) {
-    const imageURL = args.data[0].image_uris?.normal ?? assets.island;
-    super("Deck", { ...args, data: imageURL });
-    this.data = args.data;
-  }
-}
-
-export class Counter extends GameObject {
-  data: number;
-
-  constructor(args: InitArgs<number>) {
-    const imageURL = assets.burgeoning;
-    super("Counter", { ...args, data: imageURL });
-    this.data = args.data;
-  }
-}
+export class Counter extends GameObject<number> {}
+export interface CounterInitArgs extends InitArgs<number> {}

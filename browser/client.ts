@@ -1,10 +1,4 @@
-import {
-  Application as PixiApp,
-  DisplayObject,
-  InteractionData,
-  InteractionEvent,
-  Sprite,
-} from "pixi.js";
+import { Application as PixiApp, InteractionEvent, Sprite } from "pixi.js";
 import { assets } from "../server/shared/assets/manifest";
 
 export const sandbox = new PixiApp({
@@ -16,9 +10,6 @@ export const sandbox = new PixiApp({
   backgroundColor: 0x0,
 });
 
-let data: InteractionData;
-let currentTarget: DisplayObject;
-
 const { stage } = sandbox;
 
 // add FPS readout below canvas
@@ -26,21 +17,32 @@ const { stage } = sandbox;
 // app.ticker.add(stats.update, stats, UPDATE_PRIORITY.UTILITY);
 
 const island = Sprite.from(assets.island);
+island.scale.set(0.3);
 stage.addChild(island);
 
-island.scale.set(0.3);
+// Interaction stuff begins here
+
+stage.interactive = true;
 island.interactive = true;
+
+stage.hitArea = sandbox.renderer.screen;
+
+let eventTracker: InteractionEvent;
 
 island
   .on("pointerdown", (event: InteractionEvent) => {
-    ({ data } = event);
+    eventTracker = event;
   })
   .on("pointermove", () => {
-    if (data) {
-      const { x, y } = data.getLocalPosition(stage);
+    if (eventTracker?.data) {
+      const { x, y } = eventTracker.data.getLocalPosition(stage);
       island.x = x;
       island.y = y;
     }
   })
-  .on("pointerup", () => (data = null))
-  .on("pointerupoutside", () => (data = null));
+  .on("pointerup", () => {
+    eventTracker = null;
+  })
+  .on("pointerupoutside", () => {
+    eventTracker = null;
+  });

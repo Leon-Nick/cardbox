@@ -2,13 +2,13 @@
 export interface ScryfallData {
   // Core Card Fields
 
-  scryfall_id: string;
-  oracle_id: string;
-  lang: string;
-  prints_search_uri: string;
-  rulings_uri: string;
-  scryfall_uri: string;
-  uri: string;
+  // scryfall_id: string;
+  // oracle_id: string;
+  // lang: string;
+  // prints_search_uri: string;
+  // rulings_uri: string;
+  // scryfall_uri: string;
+  // uri: string;
 
   // Gameplay Fields
 
@@ -18,11 +18,11 @@ export interface ScryfallData {
   toughness?: number;
 
   colors: Color[];
-  layout: Layout;
+  // layout: Layout;
   card_faces?: CardFace[];
-  produced_mana?: Color[];
+  // produced_mana?: Color[];
 
-  keywords: string[];
+  // keywords: string[];
   name: string;
   type_line: string;
   mana_cost?: string;
@@ -40,8 +40,8 @@ export interface ScryfallData {
 
   // Print Fields
 
-  flavor_name?: string;
-  flavor_text?: string;
+  // flavor_name?: string;
+  // flavor_text?: string;
   printed_name?: string;
   printed_text?: string;
   printed_type_line?: string;

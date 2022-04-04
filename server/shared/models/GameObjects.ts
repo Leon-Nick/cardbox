@@ -1,7 +1,6 @@
 import { randomUUID } from "crypto";
 import { Container, InteractionEvent, Sprite } from "pixi.js";
 import { ScryfallData } from "./ScryfallData";
-import { assets } from "../assets/manifest";
 
 export type GameObjectSubtype = "Card" | "Deck" | "Counter";
 
